@@ -2,7 +2,8 @@
 util           = require 'util'
 {EventEmitter} = require 'events'
 debug          = require('debug')('meshblu-splunk-event-collector')
-
+ERROR_BASE_URL_INVALID = "SplunkEventBaseUrl is undefined or invalid"
+ERROR_EVENT_COLLECTOR_TOKEN_INVALID = "EventCollectorToken is undefined or invalid"
 MESSAGE_SCHEMA =
   type: 'object'
   properties:
@@ -19,6 +20,9 @@ OPTIONS_SCHEMA =
     EventCollectorToken:
       type: 'string'
       required: true
+    SplunkEventBaseUrl:
+      type: 'string'
+      required: true
 
 class Plugin extends EventEmitter
   constructor: ->
@@ -27,12 +31,8 @@ class Plugin extends EventEmitter
     @optionsSchema = OPTIONS_SCHEMA
 
   onMessage: (message) =>
-    payload = message.payload;
-    response =
-      devices: ['*']
-      topic: 'echo'
-      payload: payload
-    this.emit 'message', response
+     @emit('message', {topic: "error", error: ERROR_BASE_URL_INVALID}) if not @options?.SplunkEventBaseUrl?
+     @emit('message', {topic: "error", error: ERROR_EVENT_COLLECTOR_TOKEN_INVALID}) if not @options?.EventCollectorToken?
 
   onConfig: (device) =>
     @setOptions device.options
