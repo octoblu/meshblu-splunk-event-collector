@@ -10,8 +10,9 @@
   },
   "dependencies": {
     "coffee-script": "^1.9.0",
+    "debug": "^2.1.0",
     "meshblu": "^1.22.0",
-    "debug": "^2.1.0"
+    "request": "^2.62.0"
   },
   "bundledDependencies": [
     "request",
