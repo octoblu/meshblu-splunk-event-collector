@@ -1,6 +1,8 @@
 {Plugin} = require '../index'
 {EventEmitter} = require 'events'
 nock = require 'nock'
+request = require 'request'
+
 
 describe 'EventCollectorPlugin', ->
 
@@ -40,22 +42,28 @@ describe 'EventCollectorPlugin', ->
       it 'should send an error message saying the EventCollectorToken is invalid', ->
         expect(@messageSpy).to.have.been.calledWith(@errorMessage)
 
-    describe 'when there is a valid URL and Token in the config options', ->
+    xdescribe 'when there is a valid URL and Token in the config options', ->
       beforeEach ->
+        @dependencies =
+          request : request
+        @dependencies.request.post = sinon.spy()
+
+
+        @sut = new Plugin @dependencies
         @options =
-          SplunkEventUrl: "url"
-          EventCollectorToken: "1234"
-
+          SplunkEventUrl : "https://theforceiswithyou.com"
+          EventCollectorToken : "DarthVaderRules"
         @message =
-          exampleString: "Something happened!"
-        @splunkEventCollector = nock(@options.splunk)
-                                  .matchHeader 'Authorization', @options.EventCollectorToken
-                                  .post '/services/receivers/token/event', @message
-                                  .reply(200, (uri, res) ->
-                                    res
-                                  );
+          somekey : "has a value"
+        @sut.setOptions(@options)
+        @sut.onMessage(@message)
 
-      it 'should request the Splunk Event Collector URL with a message', ->
-        setTimeout ->
-          @splunkEventCollector.done()
-        , 5000
+      it 'Should post the message to the SplunkEventUrl endpoint', ->
+        expect(@dependencies.request.post).to.have.been.calledWith(@options.SplunkEventUrl,
+        {
+          headers :
+            Authorization : "Splunk #{@options.EventCollectorToken}"
+          json : true
+          body :
+            event : @message
+          })
