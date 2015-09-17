@@ -57,6 +57,18 @@ class Connector extends EventEmitter
       @emit 'message.send', message
       @conx.message message
 
+    @plugin.on 'unsubscribe', (message) =>
+      @emit 'unsubscribe', message
+      @conx.unsubscribe message
+
+    @plugin.on 'subscribe', (message) =>
+      @emit 'subscribe', message
+      @conx.subscribe message
+
+    @plugin.on 'update', (message) =>
+      @emit 'update', properties
+      @conx.update message
+
   emitError: (error) =>
     @emit 'error', error
 
