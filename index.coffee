@@ -4,6 +4,7 @@ util           = require 'util'
 debug          = require('debug')('meshblu-splunk-event-collector')
 _              = require 'lodash'
 
+
 ERROR_BASE_URL_INVALID = "SplunkEventUrl is undefined or invalid"
 ERROR_EVENT_COLLECTOR_TOKEN_INVALID = "EventCollectorToken is undefined or invalid"
 
@@ -35,16 +36,37 @@ OPTIONS_SCHEMA =
 
 
 class Plugin extends EventEmitter
-  constructor: ->
+  constructor :(dependencies) ->
     @options = {}
     @messageSchema = MESSAGE_SCHEMA
     @optionsSchema = OPTIONS_SCHEMA
+    @request = dependencies?.request? or require 'request'
 
   onMessage: (message) =>
      @emit('message', {topic: "error", error: ERROR_BASE_URL_INVALID}) if not @options?.SplunkEventUrl?
      @emit('message', {topic: "error", error: ERROR_EVENT_COLLECTOR_TOKEN_INVALID}) if not @options?.EventCollectorToken?
+     @request.post(@options.SplunkEventUrl, {
+        json : true
+        headers :
+          Authorization: "Splunk #{@options.EventCollectorToken}"
+        body :
+          event : message
+       }, (error, response, body) ->
+            @emit('message', {
+              devices: ["*"],
+              topic: 'error',
+              errorMessage: error
+            }) if error
 
-  # currentList, updatedList ->
+
+            @emit('message', {
+              devices : ["*"],
+              statusCode: response.statusCode,
+              result: body
+            }
+            ) unless error
+     )
+
   onConfig: (device) =>
     self = @
     @setOptions device.options
@@ -52,7 +74,7 @@ class Plugin extends EventEmitter
       removeList = _.difference subscribeList, device.options.subscribeList
       addList = _.difference device.options.subscribeList, subscribeList
       subscribeList = device.options.subscribeList
-      
+
       if removeList?
         _.each removeList, (unsubDevice)->
           debug 'unsubscribed', unsubDevice
