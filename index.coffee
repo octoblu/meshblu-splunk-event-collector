@@ -2,7 +2,6 @@
 util           = require 'util'
 {EventEmitter} = require 'events'
 debug          = require('debug')('meshblu-splunk-event-collector')
-_              = require 'lodash'
 
 
 ERROR_BASE_URL_INVALID = "SplunkEventUrl is undefined or invalid"
@@ -29,10 +28,6 @@ OPTIONS_SCHEMA =
     SplunkEventUrl:
       type: 'string'
       required: true
-    subscribeList:
-      type: 'array'
-      items:
-        type: 'string'
 
 
 class Plugin extends EventEmitter
@@ -68,21 +63,7 @@ class Plugin extends EventEmitter
      )
 
   onConfig: (device) =>
-    self = @
     @setOptions device.options
-    if ( !_.isEqual subscribeList, device.options.subscribeList )
-      removeList = _.difference subscribeList, device.options.subscribeList
-      addList = _.difference device.options.subscribeList, subscribeList
-      subscribeList = device.options.subscribeList
-
-      if removeList?
-        _.each removeList, (unsubDevice)->
-          debug 'unsubscribed', unsubDevice
-          self.emit 'unsubscribe', {uuid: unsubDevice}
-      if addList?
-        _.each addList, (subDevice) ->
-          debug 'subscribed', subDevice
-          self.emit 'subscribe', {uuid: subDevice}
 
   setOptions: (options={}) =>
     @options = options
