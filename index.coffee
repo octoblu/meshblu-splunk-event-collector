@@ -3,7 +3,7 @@ util           = require 'util'
 {EventEmitter} = require 'events'
 debug          = require('debug')('meshblu-splunk-event-collector')
 
-
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 ERROR_BASE_URL_INVALID = "SplunkEventUrl is undefined or invalid"
 ERROR_EVENT_COLLECTOR_TOKEN_INVALID = "EventCollectorToken is undefined or invalid"
 
@@ -40,7 +40,7 @@ class Plugin extends EventEmitter
   onMessage: (message) =>
      @emit('message', {topic: "error", error: ERROR_BASE_URL_INVALID}) if not @options?.SplunkEventUrl?
      @emit('message', {topic: "error", error: ERROR_EVENT_COLLECTOR_TOKEN_INVALID}) if not @options?.EventCollectorToken?
-     @request.post(@options.SplunkEventUrl, {
+     @request.post @options.SplunkEventUrl, {
         json : true
         rejectUnauthorized: false
         requestCert: true
@@ -50,18 +50,19 @@ class Plugin extends EventEmitter
         body :
           event : message
        }, (error, response, body) ->
-            @emit('message', {
-              devices: ["*"],
-              topic: 'error',
-              errorMessage: error
-            }) if error
-            @emit('message', {
-              devices : ["*"],
-              statusCode: response.statusCode,
-              result: body
-            }
-            ) unless error
-     )
+
+          @emit('message', {
+            devices: ["*"],
+            topic: 'error',
+            errorMessage: error
+          }) if error
+
+          @emit('message', {
+            devices : ["*"],
+            statusCode: response.statusCode,
+            result: body
+          }) unless error
+
 
   onConfig: (device) =>
     @setOptions device.options
