@@ -42,6 +42,9 @@ class Plugin extends EventEmitter
      @emit('message', {topic: "error", error: ERROR_EVENT_COLLECTOR_TOKEN_INVALID}) if not @options?.EventCollectorToken?
      @request.post(@options.SplunkEventUrl, {
         json : true
+        rejectUnauthorized: false
+        requestCert: true
+        agent: false
         headers :
           Authorization: "Splunk #{@options.EventCollectorToken}"
         body :
@@ -52,8 +55,6 @@ class Plugin extends EventEmitter
               topic: 'error',
               errorMessage: error
             }) if error
-
-
             @emit('message', {
               devices : ["*"],
               statusCode: response.statusCode,
