@@ -1,14 +1,22 @@
 _             = require 'lodash'
-Connector     = require './connector'
+dashdash      = require 'dashdash'
 MeshbluConfig = require 'meshblu-config'
-meshbluConfig = new MeshbluConfig {}
+Service       = require '.'
+Server        = require './src/server'
 
-connector = new Connector meshbluConfig.toJSON()
+service = new Service(
+  serviceUrl: process.env.SERVICE_URL
+)
 
-connector.on 'error', (error) ->
-  return console.error 'an unknown error occured' unless error?
-  return console.error error if _.isPlainObject error
-  console.error error.toString()
-  console.error error.stack if error?.stack?
+service.run (error)=>
+  throw error if error?
+  server = new Server {port: process.env.PORT || 80, service}
+  server.run (error) =>
+    return @panic error if error?
+    {address,port} = server.address()
 
-connector.run()
+
+process.on 'SIGTERM', =>
+  console.log 'SIGTERM caught, exiting'
+  server.stop =>
+    process.exit 0

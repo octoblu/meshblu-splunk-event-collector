@@ -1,2 +1,3 @@
-require('coffee-script/register');
-module.exports = require('./index.coffee');
+require('coffee-script/register')
+
+module.exports = require('./src/service/device-service')

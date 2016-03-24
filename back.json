@@ -1,8 +1,0 @@
-{
-  "uuid": "4983b541-7c71-4204-ab95-d2c34d890735",
-  "token": "130aec1ceeda0ca45dc5044e2d22302ac9eb9c8c",
-  "server": "meshblu.octoblu.com",
-  "port": 443,
-  "type": "device:splunk-forwarder",
-  "subscribeList" : ["4983b541-7c71-4204-ab95-d2c34d890735"]
-}

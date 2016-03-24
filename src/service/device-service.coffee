@@ -23,7 +23,7 @@ OPTIONS_SCHEMA =
       type: 'string'
       required: true
 
-class Plugin extends EventEmitter
+class DeviceService extends EventEmitter
   constructor: (dependencies)->
     @options = {}
     @messageSchema = MESSAGE_SCHEMA
@@ -62,7 +62,8 @@ class Plugin extends EventEmitter
   setOptions: (options={}) =>
     @options = options
 
-module.exports =
-  messageSchema: MESSAGE_SCHEMA
-  optionsSchema: OPTIONS_SCHEMA
-  Plugin: Plugin
+  run: (callback) =>
+    callback()
+
+
+module.exports = DeviceService
