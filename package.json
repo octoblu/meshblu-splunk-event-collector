@@ -1,7 +1,7 @@
 {
   "name": "meshblu-splunk-event-collector",
   "repository": "octoblu/meshblu-splunk-event-collector",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "main": "index.js",
   "scripts": {
     "start": "node command.js",
@@ -23,23 +23,10 @@
     "morgan": "^1.7.0",
     "request": "^2.63.0"
   },
-  "bundledDependencies": [
-    "request",
-    "tar",
-    "fstream"
-  ],
-  "platformDependencies": {
-    "darwin": [],
-    "win32": [],
-    "win64": [],
-    "linux": [],
-    "android": [],
-    "ios": []
-  },
   "license": "MIT",
   "keywords": [
-    "meshblu-connector",
-    "gateblu"
+    "meshblu",
+    "splunk"
   ],
   "devDependencies": {
     "chai": "^3.3.0",

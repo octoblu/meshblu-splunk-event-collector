@@ -25,42 +25,37 @@ OPTIONS_SCHEMA =
 
 class DeviceService extends EventEmitter
   constructor: (dependencies)->
-    @options = {}
     @messageSchema = MESSAGE_SCHEMA
     @optionsSchema = OPTIONS_SCHEMA
     @request = dependencies?.request? or require 'request'
 
-  onMessage: (message) =>
-    @emit('message', {topic: "error", error: ERROR_BASE_URL_INVALID}) if not @options?.SplunkEventUrl?
-    @emit('message', {topic: "error", error: ERROR_EVENT_COLLECTOR_TOKEN_INVALID}) if not @options?.EventCollectorToken?
-    @request.post @options.SplunkEventUrl, {
+  onReceived: ({message, config}) =>
+    {options} = config
+    @emit('message', {topic: "error", error: ERROR_BASE_URL_INVALID}) unless options?.SplunkEventUrl?
+    @emit('message', {topic: "error", error: ERROR_EVENT_COLLECTOR_TOKEN_INVALID}) unless options?.EventCollectorToken?
+    @request.post options.SplunkEventUrl, {
        json : true
        rejectUnauthorized: false
        requestCert: true
        agent: false
        headers :
-         Authorization: "Splunk #{@options.EventCollectorToken}"
+         Authorization: "Splunk #{options.EventCollectorToken}"
        body :
          event : message
-      }, (error, response, body) ->
+      }, (error, response, body) =>
 
+         return callback error, body
          @emit('message', {
-           devices: ["*"],
-           topic: 'error',
+           devices: ["*"]
+           topic: 'error'
            errorMessage: error
          }) if error
 
          @emit('message', {
-           devices : ["*"],
-           statusCode: response.statusCode,
+           devices : ["*"]
+           statusCode: response.statusCode
            result: body
          }) unless error
-
-  onConfig: (device) =>
-    @setOptions device.options
-
-  setOptions: (options={}) =>
-    @options = options
 
   run: (callback) =>
     callback()

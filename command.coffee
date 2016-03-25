@@ -1,8 +1,5 @@
-_             = require 'lodash'
-dashdash      = require 'dashdash'
-MeshbluConfig = require 'meshblu-config'
-Service       = require '.'
-Server        = require './src/server'
+Service = require '.'
+Server  = require './src/server'
 
 service = new Service(
   serviceUrl: process.env.SERVICE_URL
