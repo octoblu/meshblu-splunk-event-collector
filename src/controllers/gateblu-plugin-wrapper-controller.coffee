@@ -4,24 +4,27 @@ _           = require 'lodash'
 
 class GatebluPluginWrapperController
   received: (req, res) =>
-    console.log 'received!'
-    splunkPlugin = new Plugin()
-    splunkPlugin.on 'message', (message) =>
-      console.log "splunk gave us this message:"
-      console.log JSON.stringify message, null, 2
 
-    @getDeviceConfig req, (error, device) =>
+    meshblu = new MeshbluHttp req.meshbluAuth
+    splunkPlugin = new Plugin()
+
+    @getDeviceConfig meshblu, (error, device) =>
       return res.sendStatus(error.code || 500) if error?
       splunkPlugin.onConfig device
 
       message = req.body
       message = req.body.payload if req.body.payload?
 
-      splunkPlugin.onMessage message
-      res.sendStatus 200
+      splunkPlugin.once 'message', (message) =>
+        console.log "sending meshblu message", message
 
-  getDeviceConfig: (req, callback) =>
-    meshblu = new MeshbluHttp req.meshbluAuth
+        meshblu.message message, (error) =>
+          res.sendStatus 200
+
+      splunkPlugin.onMessage message
+
+
+  getDeviceConfig: (meshblu, callback) =>
     meshblu.whoami (error, device) =>
       return callback error if error?
       callback null, device
