@@ -6,14 +6,18 @@ class GatebluPluginWrapperController
   received: (req, res) =>
     console.log 'received!'
     splunkPlugin = new Plugin()
-    @getDeviceConfig req, callback (error, device) =>
+    splunkPlugin.on 'message', (message) =>
+      console.log "splunk gave us this message:"
+      console.log JSON.stringify message, null, 2
+
+    @getDeviceConfig req, (error, device) =>
       return res.sendStatus(error.code || 500) if error?
       splunkPlugin.onConfig device
 
       message = req.body
       message = req.body.payload if req.body.payload?
 
-      splunkPlugin.message message
+      splunkPlugin.onMessage message
       res.sendStatus 200
 
   getDeviceConfig: (req, callback) =>
