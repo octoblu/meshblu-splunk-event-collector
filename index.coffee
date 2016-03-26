@@ -42,7 +42,7 @@ class Plugin extends EventEmitter
          Authorization: "Splunk #{@options.EventCollectorToken}"
        body :
          event : message
-      }, (error, response, body) ->
+      }, (error, response, body) =>
 
          @emit('message', {
            devices: ["*"],

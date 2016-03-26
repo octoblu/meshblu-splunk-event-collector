@@ -1,7 +1,7 @@
 {
   "name": "meshblu-splunk-event-collector",
   "repository": "octoblu/meshblu-splunk-event-collector",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "main": "connector.js",
   "scripts": {
     "preinstall": "node -e \"try{require('./skip-install.js')}catch(e){}\"",
