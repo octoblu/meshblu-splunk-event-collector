@@ -1,6 +1,6 @@
 MeshbluHttp = require 'meshblu-http'
 _           = require 'lodash'
-{Plugin}    = require '../service/gateblu-plugin'
+{Plugin}    = require 'meshblu-splunk-event-collector/index'
 
 class GatebluPluginWrapperController
   received: (req, res) =>
