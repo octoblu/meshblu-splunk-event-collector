@@ -29,7 +29,7 @@ class DeviceService extends EventEmitter
     @optionsSchema = OPTIONS_SCHEMA
     @request = dependencies?.request? or require 'request'
 
-  onReceived: ({message, config}) =>
+  onReceived: ({message, config}, callback) =>
     {options} = config
     @emit('message', {topic: "error", error: ERROR_BASE_URL_INVALID}) unless options?.SplunkEventUrl?
     @emit('message', {topic: "error", error: ERROR_EVENT_COLLECTOR_TOKEN_INVALID}) unless options?.EventCollectorToken?
@@ -44,6 +44,8 @@ class DeviceService extends EventEmitter
          event : message
       }, (error, response, body) =>
 
+        console.error error
+        console.log 'body', body
          return callback error, body
          @emit('message', {
            devices: ["*"]

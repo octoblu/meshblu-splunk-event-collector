@@ -5,6 +5,7 @@ class DeviceController
   constructor: ({@service}) ->
 
   received: (req, res) =>
+    console.log 'received!'
     @getReceivedEnvelope req, (error, envelope) =>
       return res.sendStatus(error.code || 500) if error?
       @service.onReceived envelope, =>
