@@ -1,16 +1,20 @@
 MeshbluHttp = require 'meshblu-http'
 _           = require 'lodash'
+{Plugin}    = require '../service/gateblu-plugin'
 
-class DeviceController
-  constructor: ({@service}) ->
-
+class GatebluPluginWrapperController
   received: (req, res) =>
     console.log 'received!'
-    @getReceivedEnvelope req, (error, envelope) =>
+    splunkPlugin = new Plugin()
+    @getDeviceConfig req, callback (error, device) =>
       return res.sendStatus(error.code || 500) if error?
-      @service.onReceived envelope, =>
-        return res.sendStatus(error.code || 500) if error?
-        res.sendStatus 200
+      splunkPlugin.onConfig device
+
+      message = req.body
+      message = req.body.payload if req.body.payload?
+
+      splunkPlugin.message message
+      res.sendStatus 200
 
   getDeviceConfig: (req, callback) =>
     meshblu = new MeshbluHttp req.meshbluAuth
@@ -20,8 +24,7 @@ class DeviceController
 
   getReceivedEnvelope: (req, callback) =>
     @getDeviceConfig req, (error, config) =>
-      message = req.body
-      message = req.body.payload if req.body.payload?
+
       envelope =
         metadata:
           auth: req.meshbluAuth
@@ -33,4 +36,4 @@ class DeviceController
       callback null, envelope
 
 
-module.exports = DeviceController
+module.exports = GatebluPluginWrapperController

@@ -1,11 +1,12 @@
-url                   = require 'url'
-MeshbluAuth           = require 'express-meshblu-auth'
-DeviceController      = require './controllers/device-controller'
+url                            = require 'url'
+MeshbluAuth                    = require 'express-meshblu-auth'
+# DeviceController             = require './controllers/device-controller'
+GatebluPluginWrapperController = require './controllers/gateblu-plugin-wrapper-controller'
 
 class Router
-  constructor: ({service, @meshbluConfig}, dependencies={}) ->
-    throw new Error "a service is required in order to make a channeldevice" unless service?
-    @deviceController = new DeviceController {service}
+  constructor: ({@meshbluConfig}, dependencies={}) ->
+    # @deviceController = new DeviceController {service}
+    @deviceController = new GatebluPluginWrapperController()
 
   route: (app) =>
     meshbluAuth = MeshbluAuth @meshbluConfig

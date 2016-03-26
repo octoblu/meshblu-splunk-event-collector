@@ -1,16 +1,10 @@
-Service = require '.'
-Server  = require './src/server'
+Server = require './src/server'
 
-service = new Service(
-  serviceUrl: process.env.SERVICE_URL
-)
+server = new Server {port: process.env.PORT || 80}
 
-service.run (error)=>
-  throw error if error?
-  server = new Server {port: process.env.PORT || 80, service}
-  server.run (error) =>
-    return @panic error if error?
-    {address,port} = server.address()
+server.run (error) =>
+  return @panic error if error?
+  {address,port} = server.address()
 
 
 process.on 'SIGTERM', =>
